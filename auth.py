@@ -2,47 +2,31 @@
 #-*- coding:utf-8 -*-
 
 # Build-in / Std
-import os, sys, time, platform, random
-import re, json, cookielib
+import cookielib
+import json
+import os
+import platform
+import random
+import re
+import sys
+from logging import Logging
+
+# Setting Logging
+Logging.flag = True
+
 
 # requirements
-import requests, termcolor
+import requests
+import termcolor
 
 
 requests = requests.Session()
+
 requests.cookies = cookielib.LWPCookieJar('cookies')
 try:
     requests.cookies.load(ignore_discard=True)
 except:
     pass
-
-class Logging:
-    flag = True
-
-    @staticmethod
-    def error(msg):
-        if Logging.flag == True:
-            print "".join(  [ termcolor.colored("ERROR", "red"), ": ", termcolor.colored(msg, "white") ] )
-    @staticmethod
-    def warn(msg):
-        if Logging.flag == True:
-            print "".join(  [ termcolor.colored("WARN", "yellow"), ": ", termcolor.colored(msg, "white") ] )
-    @staticmethod
-    def info(msg):
-        # attrs=['reverse', 'blink']
-        if Logging.flag == True:
-            print "".join(  [ termcolor.colored("INFO", "magenta"), ": ", termcolor.colored(msg, "white") ] )
-    @staticmethod
-    def debug(msg):
-        if Logging.flag == True:
-            print "".join(  [ termcolor.colored("DEBUG", "magenta"), ": ", termcolor.colored(msg, "white") ] )
-    @staticmethod
-    def success(msg):
-        if Logging.flag == True:
-            print "".join(  [ termcolor.colored("SUCCES", "green"), ": ", termcolor.colored(msg, "white") ] )
-
-# Setting Logging
-Logging.flag = True
 
 class LoginPasswordError(Exception):
     def __init__(self, message):
@@ -77,10 +61,10 @@ def download_captcha():
     """
     Logging.info(u"正在调用外部程序渲染验证码 ... ")
     if platform.system() == "Linux":
-        Logging.info(u"Command: xdg-open %s &" % image_name )
+        Logging.info(u"Command: xdg-open %s &" % image_name)
         os.system("xdg-open %s &" % image_name )
     elif platform.system() == "Darwin":
-        Logging.info(u"Command: open %s &" % image_name )
+        Logging.info(u"Command: open %s &" % image_name)
         os.system("open %s &" % image_name )
     elif platform.system() == "SunOS":
         os.system("open %s &" % image_name )
@@ -95,7 +79,7 @@ def download_captcha():
     elif platform.system() == "Windows":
         os.system("%s" % image_name )
     else:
-        Logging.info(u"我们无法探测你的作业系统，请自行打开验证码 %s 文件，并输入验证码。" % os.path.join(os.getcwd(), image_name) )
+        Logging.info(u"我们无法探测你的作业系统，请自行打开验证码 %s 文件，并输入验证码。" % os.path.join(os.getcwd(), image_name))
 
     sys.stdout.write(termcolor.colored(u"请输入验证码: ", "cyan") )
     captcha_code = raw_input( )
@@ -108,7 +92,7 @@ def search_xsrf():
         raise NetworkError(u"验证码请求失败")
     results = re.compile(r"\<input\stype=\"hidden\"\sname=\"_xsrf\"\svalue=\"(\S+)\"", re.DOTALL).findall(r.text)
     if len(results) < 1:
-        Logging.info(u"提取XSRF 代码失败" )
+        Logging.info(u"提取XSRF 代码失败")
         return None
     return results[0]
 
@@ -151,16 +135,16 @@ def upload_form(form):
             Logging.debug(r.content)
             result = {}
         if result["r"] == 0:
-            Logging.success(u"登录成功！" )
+            Logging.success(u"登录成功！")
             return {"result": True}
         elif result["r"] == 1:
-            Logging.success(u"登录失败！" )
+            Logging.success(u"登录失败！")
             return {"error": {"code": int(result['errcode']), "message": result['msg'], "data": result['data'] } }
         else:
-            Logging.warn(u"表单上传出现未知错误: \n \t %s )" % ( str(result) ) )
+            Logging.warn(u"表单上传出现未知错误: \n \t %s )" % (str(result)))
             return {"error": {"code": -1, "message": u"unknow error"} }
     else:
-        Logging.warn(u"无法解析服务器的响应内容: \n \t %s " % r.text )
+        Logging.warn(u"无法解析服务器的响应内容: \n \t %s " % r.text)
         return {"error": {"code": -2, "message": u"parse error"} }
 
 
@@ -226,14 +210,14 @@ def login(account=None, password=None):
     if "error" in result:
         if result["error"]['code'] == 1991829:
             # 验证码错误
-            Logging.error(u"验证码输入错误，请准备重新输入。" )
+            Logging.error(u"验证码输入错误，请准备重新输入。")
             return login()
         else:
-            Logging.warn(u"unknow error." )
+            Logging.warn(u"unknow error.")
             return False
     elif "result" in result and result['result'] == True:
         # 登录成功
-        Logging.success(u"登录成功！" )
+        Logging.success(u"登录成功！")
         requests.cookies.save()
         return True
 

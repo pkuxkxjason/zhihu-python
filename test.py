@@ -20,11 +20,10 @@
                                                                   $$$$$$                            
 '''
 
-
-from zhihu import Question
-from zhihu import Answer
-from zhihu import User
-from zhihu import Collection
+from question import Question
+from answer import Answer
+from user import User
+from collection import Collection
 
 
 def question_test(url):
@@ -223,15 +222,16 @@ def test():
 
 
 def main():
-    url = "http://www.zhihu.com/question/24269892"
+    '''url = "http://www.zhihu.com/question/24269892"
     question_test(url)
     answer_url = "http://www.zhihu.com/question/24269892/answer/29960616"
-    answer_test(answer_url)
+    answer_test(answer_url)'''
+
     user_url = "http://www.zhihu.com/people/jixin"
     user_test(user_url)
-    collection_url = "http://www.zhihu.com/collection/36750683"
-    collection_test(collection_url)
-    test()
+    #collection_url = "http://www.zhihu.com/collection/36750683"
+    #collection_test(collection_url)
+    #test()
 
 
 if __name__ == '__main__':
