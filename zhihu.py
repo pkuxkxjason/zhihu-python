@@ -63,7 +63,7 @@ except:
 
 # module
 from auth import islogin,login
-from logging import Logging
+from mylogging import MyLogging
 
 """
     Note:
@@ -82,13 +82,13 @@ requests.cookies = cookielib.LWPCookieJar('cookies')
 try:
     requests.cookies.load(ignore_discard=True)
 except:
-    Logging.error(u"你还没有登录知乎哦 ...")
-    Logging.info(u"执行 `python auth.py` 即可以完成登录。")
+    MyLogging.error(u"你还没有登录知乎哦 ...")
+    MyLogging.info(u"执行 `python auth.py` 即可以完成登录。")
     raise Exception("无权限(403)")
 
 
 if islogin() != True:
-    Logging.error(u"你的身份信息已经失效，请重新生成身份信息( `python auth.py` )。")
+    MyLogging.error(u"你的身份信息已经失效，请重新生成身份信息( `python auth.py` )。")
     raise Exception("无权限(403)")
 
 
@@ -100,7 +100,7 @@ class Zhihu(object):
     def __init__(self, url):
         self.url = url
         self.soup = None
-        self.parse(url)
+        self.parse()
 
     def parse(self):
         if not self.soup:

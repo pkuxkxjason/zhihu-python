@@ -47,7 +47,7 @@ class TopicFollowers(Zhihu):
     def _get_followers_num(self):
         return int(self.soup.find("div",class_="zm-topic-side-followers-info").find("strong").string)
 
-    def get_followers_raw(self):
+    def get_followers_raw(self, limit):
         if not self.soup:
             self.parse()
         return_followers = []
@@ -65,7 +65,12 @@ class TopicFollowers(Zhihu):
         followers_num = self._get_followers_num()
         print "#followers:", followers_num
 
-        for page_num in range(1, (followers_num - 40) / 20):
+        if limit != 0:
+            limit = min(limit, followers_num)
+        else:
+            limit = followers_num
+
+        for page_num in range(1, (limit - 40) / 20):
             print '\n*',
             sys.stdout.flush()
             time.sleep(0.1)
@@ -126,18 +131,23 @@ class TopicFollowers(Zhihu):
 
 
 def Usage(prog):
-    return "Usage: Python ",prog,"topic id (example:19552212)"
+    return "Usage: Python ",prog,"topic id (example:19552212) [limit]"
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         print Usage(sys.argv[0])
     else:
         topic_id = sys.argv[1]
+        if len(sys.argv) == 3:
+            limit = int(sys.argv[2])
+        else:
+            limit = 0
+
         with open(topic_id+".txt","w+") as f:
             followers = TopicFollowers("https://www.zhihu.com/topic/%s/followers"%topic_id)
-            for u in followers.get_followers_raw():
-                f.write(u.user_url+"\n")
+            for u in followers.get_followers_raw(limit):
+                f.write(u.url+"\n")
                 f.flush()
 
 

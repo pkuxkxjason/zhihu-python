@@ -1,12 +1,15 @@
+# -*- coding: utf-8 -*-
+
+
 import platform
 import re
 
 import requests
 from bs4 import BeautifulSoup
 
-from answer import Answer
-from question import Question
-from user import User
+import answer
+import question
+import user
 
 
 class Collection:

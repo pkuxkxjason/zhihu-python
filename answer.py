@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 import os
 import platform
 import re
@@ -5,10 +8,8 @@ import re
 import html2text
 import requests
 from bs4 import BeautifulSoup
-
-from question import Question
-from user import User
-
+import question
+import user
 
 class Answer:
     answer_url = None
@@ -42,7 +43,8 @@ class Answer:
             question_link = soup.find("h2", class_="zm-item-title zm-editable-content").a
             url = "http://www.zhihu.com" + question_link["href"]
             title = question_link.string.encode("utf-8")
-            question = Question(url, title)
+
+            question = question.Question(url, title)
             return question
 
     def get_author(self):
@@ -54,12 +56,12 @@ class Answer:
             soup = self.soup
             if soup.find("div", class_="zm-item-answer-author-info").get_text(strip='\n') == u"匿名用户":
                 author_url = None
-                author = User(author_url)
+                author = user.User(author_url)
             else:
                 author_tag = soup.find("div", class_="zm-item-answer-author-info").find_all("a")[1]
                 author_id = author_tag.string.encode("utf-8")
                 author_url = "http://www.zhihu.com" + author_tag["href"]
-                author = User(author_url, author_id)
+                author = user.User(author_url, author_id)
             return author
 
     def get_upvote(self):
@@ -264,6 +266,7 @@ class Answer:
                 return int(tag_p.contents[1].contents[0])
 
     def get_voters(self):
+        from user import User
         if self.soup == None:
             self.parser()
         soup = self.soup
@@ -287,4 +290,4 @@ class Answer:
                 else:
                     voter_url = "http://www.zhihu.com" + str(voter_info.a["href"])
                     voter_id = voter_info.a["title"].encode("utf-8")
-                    yield User(voter_url, voter_id)
+                    yield user.User(voter_url, voter_id)

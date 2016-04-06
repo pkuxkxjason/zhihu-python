@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 import platform
 import re
@@ -5,13 +7,13 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from question import Question
-from collection import Collection
-from answer import Answer
+import question
+import collection
+import answer
 
 from zhihu import Zhihu
 
-from logging import Logging
+from mylogging import MyLogging
 
 class User(Zhihu):
     def __str__(self):
@@ -20,7 +22,7 @@ class User(Zhihu):
     def __init__(self, user_url, user_id=None):
         if user_url.startswith('www.zhihu.com/people', user_url.index('//') + 2) == False:
             raise ValueError("\"" + user_url + "\"" + " : it isn't a user url.")
-        super(User, self).__init__(self, user_url)
+        super(User, self).__init__(user_url)
 
     def get_user_id(self):
         user_id = self.soup.find("div", class_="title-section ellipsis") \
@@ -254,7 +256,7 @@ class User(Zhihu):
                     for question in soup.find_all("a", class_="question_link"):
                         url = "http://www.zhihu.com" + question["href"]
                         title = question.string.encode("utf-8")
-                        yield Question(url, title)
+                        yield question.Question(url, title)
 
     def get_answers(self):
         if self.user_url == None:
@@ -274,8 +276,8 @@ class User(Zhihu):
                     for answer in soup.find_all("a", class_="question_link"):
                         question_url = "http://www.zhihu.com" + answer["href"][0:18]
                         question_title = answer.string.encode("utf-8")
-                        question = Question(question_url, question_title)
-                        yield Answer("http://www.zhihu.com" + answer["href"], question, self)
+                        question = question.Question(question_url, question_title)
+                        yield answer.Answer("http://www.zhihu.com" + answer["href"], question, self)
 
     def get_collections(self):
         if self.user_url == None:
@@ -298,7 +300,7 @@ class User(Zhihu):
                         url = "http://www.zhihu.com" + \
                               collection.find("a", class_="zm-profile-fav-item-title")["href"]
                         name = collection.find("a", class_="zm-profile-fav-item-title").string.encode("utf-8")
-                        yield Collection(url, name, self)
+                        yield collection.Collection(url, name, self)
 
 
     def get_likes(self):

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 import platform
 import re
@@ -5,8 +7,8 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from answer import Answer
-from user import User
+import answer
+import user
 
 
 class Question:
@@ -112,12 +114,12 @@ class Question:
                         author = None
                         if soup.find_all("div", class_="zm-item-answer-author-info")[j].get_text(strip='\n') == u"匿名用户":
                             author_url = None
-                            author = User(author_url)
+                            author = user.User(author_url)
                         else:
                             author_tag = soup.find_all("div", class_="zm-item-answer-author-info")[j].find_all("a")[1]
                             author_id = author_tag.string.encode("utf-8")
                             author_url = "http://www.zhihu.com" + author_tag["href"]
-                            author = User(author_url, author_id)
+                            author = user.User(author_url, author_id)
 
                         if is_my_answer == True:
                             count = soup.find_all("div", class_="zm-item-answer")[j].find("a", class_="zm-item-vote-count").string
@@ -146,7 +148,7 @@ class Question:
                         for noscript in noscript_list:
                             noscript.extract()
                         content = soup
-                        answer = Answer(answer_url, self, author, upvote, content)
+                        answer = answer.Answer(answer_url, self, author, upvote, content)
                         yield answer
                 else:
                     post_url = "http://www.zhihu.com/node/QuestionAnswerListV2"
@@ -178,12 +180,12 @@ class Question:
                         author = None
                         if answer_soup.find("div", class_="zm-item-answer-author-info").get_text(strip='\n') == u"匿名用户":
                             author_url = None
-                            author = User(author_url)
+                            author = user.User(author_url)
                         else:
                             author_tag = answer_soup.find("div", class_="zm-item-answer-author-info").find_all("a")[1]
                             author_id = author_tag.string.encode("utf-8")
                             author_url = "http://www.zhihu.com" + author_tag["href"]
-                            author = User(author_url, author_id)
+                            author = user.User(author_url, author_id)
 
                         if answer_soup.find("span", class_="count") == None:
                             count = answer_soup.find("a", class_="zm-item-vote-count").string
@@ -212,7 +214,7 @@ class Question:
                         for noscript in noscript_list:
                             noscript.extract()
                         content = soup
-                        answer = Answer(answer_url, self, author, upvote, content)
+                        answer = answer.Answer(answer_url, self, author, upvote, content)
                         yield answer
 
     def get_top_i_answers(self, n):
